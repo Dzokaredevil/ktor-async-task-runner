@@ -33,9 +33,10 @@ docker compose up --build
 ```bash
 docker compose down -v
 ```
-Локальный запуск
-Поднять PostgreSQL (только БД, без приложения):
 
+###Локальный запуск
+
+Поднять PostgreSQL (только БД, без приложения):
 ```bash
 docker compose up -d postgres
 ```

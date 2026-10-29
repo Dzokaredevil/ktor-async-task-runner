@@ -29,6 +29,10 @@ fun Application.configureRouting() {
                     call.respond(HttpStatusCode.BadRequest, mapOf("error" to "userId and name required"))
                     return@post
                 }
+                if (req.userId.length > 100 || req.name.length > 200) {
+                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "userId max 100, name max 200 chars"))
+                    return@post
+                }
                 val task = TaskService.createTask(req.userId, req.name)
                 call.respond(HttpStatusCode.Created, task)
             }

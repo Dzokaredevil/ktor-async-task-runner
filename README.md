@@ -21,7 +21,6 @@ Async background task runner with real-time progress via WebSocket — Kotlin, K
 - Gradle (Kotlin DSL), Docker, docker-compose
 
 ## Запуск через Docker
-
 ```bash
 docker compose up --build
 ```
@@ -29,26 +28,25 @@ docker compose up --build
 После старта откройте http://localhost:8080. Приложение поднимется вместе с PostgreSQL; схема таблицы tasks создаётся автоматически при первом запуске.
 
 Остановить и удалить контейнеры вместе с данными БД:
-
 ```bash
 docker compose down -v
 ```
 
-### Локальный запуск
+## Локальный запуск
 
 Поднять PostgreSQL (только БД, без приложения):
 ```bash
 docker compose up -d postgres
 ```
-Запустить приложение:
 
+Запустить приложение:
 ```bash
 ./gradlew run
 ```
+
 Открыть http://localhost:8080.
 
-### Переменные окружения
-
+## Переменные окружения
 | Переменная | По умолчанию | Назначение |
 |---|---|---|
 | `DB_URL` | `jdbc:postgresql://localhost:5432/taskrunner` | JDBC-URL PostgreSQL |
@@ -58,45 +56,44 @@ docker compose up -d postgres
 
 Значения по умолчанию совпадают с настройками docker-compose.yml, поэтому при локальном запуске переменные можно не задавать.
 
-### Использование
+## Использование
 Откройте http://localhost:8080. Клиент сгенерирует userId, сохранит его в localStorage и подключится по WebSocket. Введите название задачи и нажмите «Создать» — прогресс-бар будет расти по мере выполнения.
 
-REST API
+## REST API
 Создать задачу:
-
 ```bash
 curl -X POST http://localhost:8080/tasks \
   -H 'Content-Type: application/json' \
   -d '{"userId":"u1","name":"demo"}'
 ```
-Список задач пользователя:
 
+Список задач пользователя:
 ```bash
 curl 'http://localhost:8080/tasks?userId=u1'
 ```
 
 Конкретная задача:
-
 ```bash
 curl http://localhost:8080/tasks/<uuid>
 ```
+
 WebSocket
 ws://localhost:8080/ws?userId=u1 — сервер отправляет JSON-сообщения о прогрессе:
 
 ```json
 {"taskId":"...","progress":40,"status":"RUNNING","result":null}
 ```
-При завершении:
 
+При завершении:
 ```json
 {"taskId":"...","progress":100,"status":"COMPLETED","result":"Task completed at ..."}
 ```
 
-### Проверка изоляции пользователей
+## Проверка изоляции пользователей
 Откройте http://localhost:8080 в двух окнах — обычном и в режиме инкогнито. Это два разных userId. 
 Создайте задачу в первом окне: прогресс должен обновляться только в нём. Во втором окне сообщения о чужой задаче появляться не должны — это подтверждает, что WebSocket-рассылка фильтруется по userId.
 
-### Структура проекта
+## Структура проекта
 ```text
 src/main/kotlin/com/example/taskrunner/
 ├── Application.kt              — точка входа, установка плагинов

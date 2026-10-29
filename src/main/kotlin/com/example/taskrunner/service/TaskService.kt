@@ -41,6 +41,7 @@ object TaskService {
     private fun runTaskAsync(taskId: UUID, userId: String) {
         scope.launch(Dispatchers.IO) {
             try {
+                delay(150)
                 updateStatus(taskId, TaskStatus.RUNNING, 0)
                 ProgressNotifier.notify(userId, ProgressMessage(taskId.toString(), 0, TaskStatus.RUNNING))
 

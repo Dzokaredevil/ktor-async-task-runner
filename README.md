@@ -55,6 +55,7 @@ docker compose up -d postgres
 | `DB_USER` | `taskrunner` | Пользователь БД |
 | `DB_PASSWORD` | `taskrunner` | Пароль БД |
 | `PORT` | `8080` | Порт HTTP-сервера |
+
 Значения по умолчанию совпадают с настройками docker-compose.yml, поэтому при локальном запуске переменные можно не задавать.
 
 Использование

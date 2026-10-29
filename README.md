@@ -12,3 +12,5 @@ Async background task runner with real-time progress via WebSocket — Kotlin, K
 
 ```bash
 docker compose up --build
+
+<img width="1879" height="937" alt="image" src="https://github.com/user-attachments/assets/f6afe5be-5518-4162-b124-a8520d00b083" />

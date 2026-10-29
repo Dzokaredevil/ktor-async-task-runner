@@ -7,6 +7,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import java.util.UUID
+import java.time.format.DateTimeFormatter.ISO_INSTANT
 
 object TaskService {
     private val log = LoggerFactory.getLogger(TaskService::class.java)
@@ -82,6 +83,6 @@ object TaskService {
         status = row[Tasks.status],
         progress = row[Tasks.progress],
         result = row[Tasks.result],
-        createdAt = row[Tasks.createdAt].toString()
+        createdAt = ISO_INSTANT.format(row[Tasks.createdAt])
     )
 }

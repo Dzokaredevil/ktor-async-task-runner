@@ -1,7 +1,6 @@
 package com.example.taskrunner.plugins
 
 import com.example.taskrunner.dto.CreateTaskRequest
-import com.example.taskrunner.dto.ProgressMessage
 import com.example.taskrunner.service.ProgressNotifier
 import com.example.taskrunner.service.TaskService
 import io.ktor.http.*
@@ -12,9 +11,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.channels.consumeEach
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.util.UUID
+import java.util.*
 
 fun Application.configureRouting() {
     routing {

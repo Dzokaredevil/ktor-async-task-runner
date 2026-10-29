@@ -2,10 +2,9 @@ package com.example.taskrunner.service
 
 import com.example.taskrunner.dto.ProgressMessage
 import io.ktor.websocket.*
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
-import java.util.Collections
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 object ProgressNotifier {

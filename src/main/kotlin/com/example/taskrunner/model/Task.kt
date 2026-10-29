@@ -3,8 +3,6 @@ package com.example.taskrunner.model
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.timestamp
-import java.time.Instant
-import java.util.UUID
 
 enum class TaskStatus { PENDING, RUNNING, COMPLETED, FAILED }
 

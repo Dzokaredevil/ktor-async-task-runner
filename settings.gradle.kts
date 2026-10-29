@@ -1,0 +1,1 @@
+rootProject.name = "ktor-async-task-runner"

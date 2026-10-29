@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Async Task Runner</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 40px auto; }
+        .bar { height: 22px; background: #eee; border-radius: 4px; overflow: hidden; }
+        .bar > div { height: 100%; width: 0; background: #4caf50; transition: width .3s; }
+        .task { margin-bottom: 12px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+        .status { font-size: 12px; color: #666; margin-top: 4px; }
+    </style>
+</head>
+<body>
+<h2>Async Task Runner</h2>
+<p>Ваш userId: <code id="uid"></code></p>
+<input id="name" placeholder="Название задачи" />
+<button onclick="createTask()">Создать задачу</button>
+<div id="tasks" style="margin-top:20px"></div>
+
+<script>
+    const userId = localStorage.getItem('userId') || crypto.randomUUID();
+    localStorage.setItem('userId', userId);
+    document.getElementById('uid').textContent = userId;
+
+    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ws = new WebSocket(`${protocol}//${location.host}/ws?userId=${userId}`);
+
+    ws.onopen = () => console.log('WS connected');
+    ws.onmessage = (e) => {
+      const msg = JSON.parse(e.data);
+      const bar = document.querySelector(`#task-${msg.taskId} .bar > div`);
+      const st = document.querySelector(`#task-${msg.taskId} .status`);
+      if (bar) bar.style.width = msg.progress + '%';
+      if (st) st.textContent = `${msg.status} — ${msg.progress}%` + (msg.result ? ` — ${msg.result}` : '');
+    };
+
+    async function createTask() {
+      const name = document.getElementById('name').value.trim();
+      if (!name) return;
+      const res = await fetch('/tasks', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ userId, name })
+      });
+      const task = await res.json();
+      addTaskCard(task);
+    }
+
+    function addTaskCard(task) {
+      const div = document.createElement('div');
+      div.className = 'task';
+      div.id = `task-${task.id}`;
+      div.innerHTML = `
+        <div><b>${task.name}</b> <small>(${task.id.slice(0,8)})</small></div>
+        <div class="bar"><div></div></div>
+        <div class="status">${task.status} — ${task.progress}%</div>`;
+      document.getElementById('tasks').prepend(div);
+    }
+
+    fetch(`/tasks?userId=${userId}`).then(r => r.json()).then(list => {
+      list.forEach(addTaskCard);
+    });
+</script>
+</body>
+</html>

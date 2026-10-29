@@ -10,7 +10,7 @@ import java.util.UUID
 
 object TaskService {
     private val log = LoggerFactory.getLogger(TaskService::class.java)
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     fun createTask(userId: String, name: String): TaskDto {
         val id = UUID.randomUUID()

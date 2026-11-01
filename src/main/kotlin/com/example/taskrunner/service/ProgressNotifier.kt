@@ -17,9 +17,10 @@ object ProgressNotifier {
     }
 
     fun unregister(userId: String, session: DefaultWebSocketSession) {
-        sessions[userId]?.remove(session)
-        if (sessions[userId]?.isEmpty() == true) sessions.remove(userId)
-        log.info("WS unregistered user=$userId")
+        sessions.compute(userId) { _, set ->
+            set?.remove(session)
+            if (set.isNullOrEmpty()) null else set
+        }
     }
 
     suspend fun notify(userId: String, message: ProgressMessage) {

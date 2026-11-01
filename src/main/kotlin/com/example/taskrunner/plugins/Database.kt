@@ -1,5 +1,6 @@
 package com.example.taskrunner.plugins
 
+import com.example.taskrunner.model.TaskStatus
 import com.example.taskrunner.model.Tasks
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -7,6 +8,7 @@ import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 fun Application.configureDatabase() {
     val config = environment.config.config("database")
@@ -24,6 +26,13 @@ fun Application.configureDatabase() {
 
     transaction {
         SchemaUtils.create(Tasks)
+        val recovered = Tasks.update({ Tasks.status eq TaskStatus.RUNNING }) {
+            it[status] = TaskStatus.FAILED
+            it[result] = "Server restarted during execution"
+        }
+        if (recovered > 0) {
+            log.warn("Marked $recovered stale RUNNING task(s) as FAILED after restart")
+        }
     }
     log.info("Database connected: ${hikari.jdbcUrl}")
 }

@@ -30,9 +30,8 @@
     ws.onmessage = (e) => {
       const msg = JSON.parse(e.data);
       const bar = document.querySelector(`#task-${msg.taskId} .bar > div`);
-      const st = document.querySelector(`#task-${msg.taskId} .status`);
-      if (bar) bar.style.width = msg.progress + '%';
-      if (st) st.textContent = `${msg.status} — ${msg.progress}%` + (msg.result ? ` — ${msg.result}` : '');
+      if (!bar) { pending[msg.taskId] = msg; return; }
+      applyProgress(msg);
     };
 
     async function createTask() {
@@ -56,6 +55,7 @@
         <div class="bar"><div></div></div>
         <div class="status">${task.status} — ${task.progress}%</div>`;
       document.getElementById('tasks').prepend(div);
+      if (pending[task.id]) { applyProgress(pending[task.id]); delete pending[task.id]; }
     }
 
     fetch(`/tasks?userId=${userId}`).then(r => r.json()).then(list => {

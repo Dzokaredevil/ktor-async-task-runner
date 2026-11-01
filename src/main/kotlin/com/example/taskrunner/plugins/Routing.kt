@@ -1,6 +1,7 @@
 package com.example.taskrunner.plugins
 
 import com.example.taskrunner.dto.CreateTaskRequest
+import com.example.taskrunner.dto.ErrorResponse
 import com.example.taskrunner.service.ProgressNotifier
 import com.example.taskrunner.service.TaskService
 import io.ktor.http.*
@@ -28,11 +29,14 @@ fun Application.configureRouting() {
             post {
                 val req = call.receive<CreateTaskRequest>()
                 if (req.userId.isBlank() || req.name.isBlank()) {
-                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "userId and name required"))
+                    call.respond(HttpStatusCode.BadRequest, ErrorResponse("validation", "userId and name required"))
                     return@post
                 }
                 if (req.userId.length > 100 || req.name.length > 200) {
-                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "userId max 100, name max 200 chars"))
+                    call.respond(
+                        HttpStatusCode.BadRequest,
+                        ErrorResponse("validation", "userId max 100, name max 200 chars")
+                    )
                     return@post
                 }
                 val task = TaskService.createTask(req.userId, req.name)
@@ -40,7 +44,10 @@ fun Application.configureRouting() {
             }
             get {
                 val userId = call.request.queryParameters["userId"]
-                    ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "userId required"))
+                    ?: return@get call.respond(
+                        HttpStatusCode.BadRequest,
+                        ErrorResponse("validation", "userId required")
+                    )
                 call.respond(TaskService.getTasksByUser(userId))
             }
             get("/{id}") {

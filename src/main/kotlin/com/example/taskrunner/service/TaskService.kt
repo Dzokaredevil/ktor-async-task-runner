@@ -64,7 +64,10 @@ object TaskService {
                 log.error("Task $taskId failed", e)
                 val lastProgress = getTask(taskId)?.progress ?: 0
                 updateStatus(taskId, TaskStatus.FAILED, lastProgress, e.message)
-                ProgressNotifier.notify(userId, ProgressMessage(taskId.toString(), lastProgress, TaskStatus.FAILED, e.message))
+                ProgressNotifier.notify(
+                    userId,
+                    ProgressMessage(taskId.toString(), lastProgress, TaskStatus.FAILED, e.message)
+                )
             }
         }
     }

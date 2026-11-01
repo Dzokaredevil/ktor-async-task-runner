@@ -13,3 +13,9 @@ data class ProgressMessage(
     val status: TaskStatus,
     val result: String? = null
 )
+
+@Serializable
+data class ErrorResponse(
+    val code: String,
+    val message: String
+)

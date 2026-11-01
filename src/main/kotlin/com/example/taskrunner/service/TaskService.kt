@@ -13,7 +13,7 @@ object TaskService {
     private val log = LoggerFactory.getLogger(TaskService::class.java)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    fun createTask(userId: String, name: String): TaskDto {
+    suspend fun createTask(userId: String, name: String): TaskDto {
         val id = UUID.randomUUID()
         transaction {
             Tasks.insert {
@@ -29,14 +29,18 @@ object TaskService {
         return dto
     }
 
-    fun getTask(id: UUID): TaskDto? = transaction {
-        Tasks.select { Tasks.id eq id }.map(::toDto).singleOrNull()
+    suspend fun getTask(id: UUID): TaskDto? = withContext(Dispatchers.IO) {
+        transaction {
+            Tasks.select { Tasks.id eq id }.map(::toDto).singleOrNull()
+        }
     }
 
-    fun getTasksByUser(userId: String): List<TaskDto> = transaction {
-        Tasks.select { Tasks.userId eq userId }
-            .orderBy(Tasks.createdAt to SortOrder.DESC)
-            .map(::toDto)
+    suspend fun getTasksByUser(userId: String): List<TaskDto> = withContext(Dispatchers.IO) {
+        transaction {
+            Tasks.select { Tasks.userId eq userId }
+                .orderBy(Tasks.createdAt to SortOrder.DESC)
+                .map(::toDto)
+        }
     }
 
     private fun runTaskAsync(taskId: UUID, userId: String) {
@@ -65,12 +69,14 @@ object TaskService {
         }
     }
 
-    private fun updateStatus(id: UUID, status: TaskStatus, progress: Int, result: String? = null) {
-        transaction {
-            Tasks.update({ Tasks.id eq id }) {
-                it[Tasks.status] = status
-                it[Tasks.progress] = progress
-                if (result != null) it[Tasks.result] = result
+    private suspend fun updateStatus(id: UUID, status: TaskStatus, progress: Int, result: String? = null) {
+        withContext(Dispatchers.IO) {
+            transaction {
+                Tasks.update({ Tasks.id eq id }) {
+                    it[Tasks.status] = status
+                    it[Tasks.progress] = progress
+                    if (result != null) it[Tasks.result] = result
+                }
             }
         }
     }
